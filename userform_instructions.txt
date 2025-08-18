@@ -1,0 +1,100 @@
+Below are the instructions and the code required to create a settings panel for the sticker layout script.
+
+---
+### Part 1: Step-by-Step Instructions to Create the Form
+---
+
+1.  **Open the VBA Editor:** In CorelDRAW, press `Alt + F11`. This will open the Visual Basic for Applications editor.
+
+2.  **Insert a UserForm:**
+    *   In the VBA Editor menu, click `Insert` -> `UserForm`. A new blank form will appear, along with a "Toolbox" window.
+    *   In the `(Properties)` window (usually on the left), find the `(Name)` property and change it from `UserForm1` to `frmSettings`.
+    *   Change the `Caption` property to `Pricing Settings`.
+
+3.  **Add Controls to the Form:**
+    *   From the `Toolbox` window, click on the `Label` control (the "A" icon) and then click on the form to place it. Do this 6 times.
+    *   From the `Toolbox`, click on the `TextBox` control (the "ab|" icon) and place it next to each label. Do this 6 times.
+    *   From the `Toolbox`, click on the `CommandButton` control and place two buttons at the bottom of the form.
+
+4.  **Name the Controls:** This is the most important step. Click on each control one by one and change its `(Name)` property in the Properties window. The names **must** match exactly as follows:
+
+    | Control Type | What it's for      | `(Name)` Property      | `Caption` Property (for Labels/Buttons) |
+    |--------------|--------------------|------------------------|-----------------------------------------|
+    | Label        | Vinyl Cost         | `lblVinylCost`         | `Vinyl Cost (per m²):`                   |
+    | TextBox      | Vinyl Cost Value   | `txtVinylCost`         | (n/a)                                   |
+    | Label        | VAT Rate           | `lblVatRate`           | `VAT Rate (%):`                         |
+    | TextBox      | VAT Rate Value     | `txtVatRate`           | (n/a)                                   |
+    | Label        | Roll Width         | `lblRollWidth`         | `Roll Width (mm):`                      |
+    | TextBox      | Roll Width Value   | `txtRollWidth`         | (n/a)                                   |
+    | Label        | Bleed              | `lblBleed`             | `Bleed (mm):`                           |
+    | TextBox      | Bleed Value        | `txtBleed`             | (n/a)                                   |
+    | Label        | Min Sticker Price  | `lblMinStickerPrice`   | `Min Price per Sticker:`                |
+    | TextBox      | Min Sticker Price Value | `txtMinStickerPrice` | (n/a)                                   |
+    | Label        | Min Order Amount   | `lblMinOrder`          | `Min Order Amount:`                     |
+    | TextBox      | Min Order Amount Value | `txtMinOrder`        | (n/a)                                   |
+    | CommandButton| Save Button        | `cmdSave`              | `Save`                                  |
+    | CommandButton| Cancel Button      | `cmdCancel`            | `Cancel`                                |
+
+    Arrange the controls on the form so they are easy to read.
+
+5.  **Add the Code to the Form:**
+    *   Double-click on the gray, empty area of your `frmSettings` form. This will open the code window for the form.
+    *   Delete any text that is already in the code window.
+    *   Copy the entire block of code from **Part 2** below and paste it into this code window.
+
+6.  **Save:** In the VBA Editor, click the `Save` icon in the toolbar.
+
+You are now done creating the settings panel. The next steps in the main plan will add a way to open it.
+
+---
+### Part 2: Code for the `frmSettings` UserForm
+---
+' Copy and paste this entire code block into the code window for your frmSettings UserForm.
+
+Option Explicit ' Enforces variable declaration
+
+' This event runs when the form is opened
+Private Sub UserForm_Initialize()
+    ' Declare variables to hold the settings
+    Dim vinylCost As Double, vatRate As Double, rollWidth As Double
+    Dim bleed As Double, minStickerPrice As Double, minOrder As Double
+
+    ' Load the current settings from the registry
+    ' This calls the public sub in your main module
+    LoadSettings vinylCost, vatRate, rollWidth, bleed, minStickerPrice, minOrder
+
+    ' Populate the text boxes on the form with the loaded values
+    ' NOTE: The names like txtVinylCost MUST match the names of the text boxes you created.
+    txtVinylCost.Value = CStr(vinylCost)
+    txtVatRate.Value = CStr(vatRate * 100) ' Display VAT as a percentage, e.g., 15
+    txtRollWidth.Value = CStr(rollWidth)
+    txtBleed.Value = CStr(bleed)
+    txtMinStickerPrice.Value = CStr(minStickerPrice)
+    txtMinOrder.Value = CStr(minOrder)
+End Sub
+
+' This event runs when the "Save" button is clicked
+Private Sub cmdSave_Click()
+    ' Basic validation to ensure values are numeric
+    If Not IsNumeric(txtVinylCost.Value) Or Not IsNumeric(txtVatRate.Value) Or _
+       Not IsNumeric(txtRollWidth.Value) Or Not IsNumeric(txtBleed.Value) Or _
+       Not IsNumeric(txtMinStickerPrice.Value) Or Not IsNumeric(txtMinOrder.Value) Then
+        MsgBox "All values must be numeric.", vbExclamation, "Invalid Input"
+        Exit Sub
+    End If
+
+    ' Call the public SaveSettings sub from the main module
+    ' We convert the VAT rate from a percentage back to a decimal
+    SaveSettings txtVinylCost.Value, CStr(CDbl(txtVatRate.Value) / 100), txtRollWidth.Value, txtBleed.Value, txtMinStickerPrice.Value, txtMinOrder.Value
+
+    ' Unload the form
+    Unload Me
+
+    MsgBox "Settings saved.", vbInformation
+End Sub
+
+' This event runs when the "Cancel" button is clicked
+Private Sub cmdCancel_Click()
+    ' Just unload the form without saving
+    Unload Me
+End Sub
