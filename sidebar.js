@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Calculate sticker price
   function calculatePrice(width, height) {
-    const VINYL_COST = parseFloat(vinylCostInput.value) || 420.00;
+    const VINYL_COST = parseFloat(vinylCostInput.value) || 460.00;
     const ROLL_WIDTH = 650;
     const BLEED = 1;
     const MIN_PRICE_PER_STICKER = 0.20;
@@ -94,8 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Horizontal Orientation
     const W_bleed_horizontal = W + BLEED;
     const S_raw_horizontal = ROLL_WIDTH / W_bleed_horizontal;
-    const decimal_part_horizontal = S_raw_horizontal - Math.floor(S_raw_horizontal);
-    const S_rounded_horizontal = decimal_part_horizontal >= 0.95 ? Math.ceil(S_raw_horizontal) : Math.floor(S_raw_horizontal);
+    const S_rounded_horizontal = Math.floor(S_raw_horizontal);
     const H_meters_horizontal = H / 1000;
     const Area_horizontal = 0.65 * H_meters_horizontal;
     const Row_Cost_horizontal = Area_horizontal * VINYL_COST;
@@ -104,8 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Vertical Orientation
     const H_bleed_vertical = H + BLEED;
     const S_raw_vertical = ROLL_WIDTH / H_bleed_vertical;
-    const decimal_part_vertical = S_raw_vertical - Math.floor(S_raw_vertical);
-    const S_rounded_vertical = decimal_part_vertical >= 0.95 ? Math.ceil(S_raw_vertical) : Math.floor(S_raw_vertical);
+    const S_rounded_vertical = Math.floor(S_raw_vertical);
     const W_meters_vertical = W / 1000;
     const Area_vertical = 0.65 * W_meters_vertical;
     const Row_Cost_vertical = Area_vertical * VINYL_COST;
